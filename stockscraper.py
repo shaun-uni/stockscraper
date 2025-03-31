@@ -19,7 +19,7 @@ driver.get(url)
 driver.maximize_window()
 
 # ✅ **Explicitly wait for elements**
-wait = WebDriverWait(driver, 10)
+wait = WebDriverWait(driver, 5)
 
 # ✅ **Open the 'Indicators' dropdown**
 indicators_dropdown = wait.until(
