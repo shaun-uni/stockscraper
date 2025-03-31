@@ -1,4 +1,4 @@
-# Web Scraping Stock Indicator Data to create a Stock Screener in a csv
+# Web Scraping Stock Indicator Data to a csv file
 
 ## A python file that uses the Selenium library to webscrape data from a free stock screener online [StockAnalysis.com](https://stockanalysis.com/stocks/screener/)
 
