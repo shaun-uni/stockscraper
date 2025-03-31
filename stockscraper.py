@@ -7,7 +7,7 @@ import pandas as pd
 import time
 
 # Set up ChromeDriver path
-chrome_driver_path = r"C:\Users\HP user\Downloads\chromedriver-win64\chromedriver-win64\chromedriver.exe"
+chrome_driver_path = r"C:\your_path_here\chromedriver.exe"
 service = Service(chrome_driver_path)
 driver = webdriver.Chrome(service=service)
 
