@@ -6,86 +6,81 @@ from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 import time
 
-# Set up ChromeDriver path
-chrome_driver_path = r"C:\your_path_here\chromedriver.exe"
+# Chrome driver setup
+chrome_driver_path = r"C:\Users\HP user\Downloads\chrome_Driver\chromedriver-win64\chromedriver.exe"
 service = Service(chrome_driver_path)
 driver = webdriver.Chrome(service=service)
 
-# Open stock screener page
-url = "https://stockanalysis.com/stocks/screener/"
-driver.get(url)
+# Website open and set up for scraping
+driver.get("https://stockanalysis.com/stocks/screener/")
+driver.maximize_window() # maximize window for visibility
+wait = WebDriverWait(driver, 3) # allow elements to load
 
-# Maximize the window for better interaction
-driver.maximize_window()
-
-# ✅ **Explicitly wait for elements**
-wait = WebDriverWait(driver, 5)
-
-# ✅ **Open the 'Indicators' dropdown**
+# Open the dropdown stock indicators list
 indicators_dropdown = wait.until(
     EC.element_to_be_clickable((By.XPATH, "/html/body/div/div[1]/div[2]/main/div[3]/div[1]/div/div[3]/button"))
-)
+) # Use XPATH from element HTML
 indicators_dropdown.click()
 
-# ✅ **Find and select all checkboxes**
+# Choose all stock indicators
 time.sleep(1)
 checkboxes_container = driver.find_element(By.XPATH, "/html/body/div/div[1]/div[2]/main/div[3]/div[1]/div/div[3]/div/div[2]")
-
 checkboxes = checkboxes_container.find_elements(By.XPATH, ".//input[@type='checkbox']")
 
+# Loop through and select every checkbox
 for checkbox in checkboxes:
     if not checkbox.is_selected():
         driver.execute_script("arguments[0].click();", checkbox)
         time.sleep(0.5)
 
-print("✅ All checkboxes selected.")
+print("All indicators have been selected")
 time.sleep(2)
 
-# ✅ **Scraping and pagination**
+# Scraping webpage data
 all_stocks = []
 page_number = 1
 
 while True:
-    print(f"📄 Scraping page {page_number}...")  # Debug message
-    
+    print(f"Scraping page {page_number}")
+
     try:
-        # Find all stock rows
+        # Find all rows of stocks
         stock_rows = driver.find_elements(By.XPATH, "//table/tbody/tr")
 
         for row in stock_rows:
             columns = row.find_elements(By.TAG_NAME, "td")
-            if len(columns) > 1:  # Ensure row has data
+            if len(columns) > 1:
                 stock_data = [col.text for col in columns]
                 all_stocks.append(stock_data)
-        
-        # Use JavaScript to scroll down the page to ensure all elements are visible
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)  # Wait for the page to scroll and load content
 
-        # Wait for the "Next" button to be visible and clickable
-        next_button = WebDriverWait(driver, 3 ).until(
+        
+        # Make sure that all elements are visible
+        driver.execute_script("window.scrollTo(0,document.body.scrollHeight);")
+        time.sleep(2)
+
+        # Click the Next button
+        next_button = WebDriverWait(driver, 3).until(
             EC.element_to_be_clickable((By.XPATH, "/html/body/div/div[1]/div[2]/main/div[3]/nav[2]/button[2]"))
         )
 
-        # Check if the "Next" button is disabled
-        if "disabled" in next_button.get_attribute("class"):  # Check if it's disabled
-            print(f"❌ Reached last page ({page_number}). Stopping.")
+        if "disabled" in next_button.get_attribute("class"):
+            print(f"Reached the last page ({page_number}). Ending")
             break
-        
-        # Use JavaScript to click the "Next" button directly
+
         driver.execute_script("arguments[0].click();", next_button)
 
         page_number += 1
-        time.sleep(2)  # Allow time for new page to load
-        
+        time.sleep(2)
+
+
     except Exception as e:
-        print(f"❌ No 'Next' button found on page {page_number} or an error occurred: {e}. Stopping.")
+        print(f"No next button was found, stopped at page {page_number} or error {e} occured")
         break
 
-# Save to CSV
+# Save everything to CSV file
 df = pd.DataFrame(all_stocks)
 df.to_csv("stocks.csv", index=False, header=False)
-print(f"✅ Data saved to stocks.csv. Scraped {page_number} pages.")
+print(f"{page_number} pages scraped. Data saved to stocks.csv")
 
-# ✅ **Close browser**
+# Close browser
 driver.quit()
