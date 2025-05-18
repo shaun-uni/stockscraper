@@ -1,6 +1,6 @@
 # Web Scraping Stock Indicator Data to a csv file
 
-## A python file that uses the Selenium library to webscrape data from a free stock screener online [StockAnalysis.com](https://stockanalysis.com/stocks/screener/)
+## A python file that uses the Selenium to webscrape data from a free stock screener online [StockAnalysis.com](https://stockanalysis.com/stocks/screener/)
 
 ## Setup:
 1. Download ChromeDriver from: https://chromedriver.chromium.org/downloads.
